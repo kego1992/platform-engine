@@ -184,14 +184,24 @@ async def test_services_execute_http(patch, story, async_mock):
         'http': {
             'method': 'post',
             'port': 2771,
-            'path': '/invoke'
+            'path': '/invoke/{path_param}'
         },
         'arguments': {
-            'foo': {}
+            'foo': {
+                'in' : 'requestBody'
+            },
+            'query_param': {
+                'type': 'string',
+                'in': 'query'
+            },
+            'path_param': {
+                'type': 'string',
+                'in': 'path'
+            }
         }
     }
 
-    expected_url = 'http://container_host:2771/invoke'
+    expected_url = 'http://container_host:2771/invoke/bar?query_param=bar'
 
     patch.object(story, 'argument_by_name', return_value='bar')
 

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import urllib
+from urllib import parse
 from tornado.httpclient import HTTPError
 
 
@@ -19,3 +21,8 @@ class HttpUtils:
                 )
 
         raise HTTPError(500, message=f'Failed to call {url}!')
+
+    @staticmethod
+    def add_params_to_url(url, params):
+        return f'{url}?{urllib.parse.urlencode(params)}'
+        

@@ -207,8 +207,17 @@ class Services:
         hostname = await Containers.get_hostname(story, line, chain[0].name)
         args = command_conf.get('arguments')
         body = {}
+        query_params = {}
+        path_params = {}
+
         for arg in args:
-            body[arg] = story.argument_by_name(line, arg)
+            value =story.argument_by_name(line, arg)
+            if args[arg]['in'] == 'query':
+                query_params[arg] = value
+            elif args[arg]['in'] == 'path':
+                path_params[arg] = value
+            else:
+                body[arg] = value;
 
         kwargs = {
             'method': command_conf['http'].get('method', 'post').upper(),
@@ -217,9 +226,9 @@ class Services:
                 'Content-Type': 'application/json; charset=utf-8'
             }
         }
-
+        
         port = command_conf['http'].get('port', 5000)
-        path = command_conf['http']['path']
+        path = HttpUtils.add_params_to_url(command_conf['http']['path'].format(**path_params), query_params)
         url = f'http://{hostname}:{port}{path}'
 
         story.logger.debug(f'Invoking service on {url} with payload {kwargs}')
