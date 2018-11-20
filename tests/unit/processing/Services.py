@@ -188,7 +188,7 @@ async def test_services_execute_http(patch, story, async_mock):
         },
         'arguments': {
             'foo': {
-                'in' : 'requestBody'
+                'in': 'requestBody'
             },
             'query_param': {
                 'type': 'string',
@@ -197,6 +197,10 @@ async def test_services_execute_http(patch, story, async_mock):
             'path_param': {
                 'type': 'string',
                 'in': 'path'
+            },
+            'default_case': {
+                'type': 'string',
+                'in': 'invalid'
             }
         }
     }

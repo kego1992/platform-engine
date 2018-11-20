@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib
 from urllib import parse
+
 from tornado.httpclient import HTTPError
 
 
@@ -25,4 +26,3 @@ class HttpUtils:
     @staticmethod
     def add_params_to_url(url, params):
         return f'{url}?{urllib.parse.urlencode(params)}'
-        
