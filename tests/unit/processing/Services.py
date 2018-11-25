@@ -174,8 +174,16 @@ def test_resolve_chain(story):
                   Event(name='foo'), Command(name='sonar')])
 
 
+@pytest.mark.parametrize('locations', [
+    {'foo': 'someid', 'query_param': 'true',
+        'path_param': 1234, 'default_case': 'default_case'},
+    {'foo': 1234, 'query_param': 'someid',
+        'path_param': 'true', 'default_case': 'default_case'},
+    {'foo': 'true', 'query_param': 1234,
+        'path_param': 'someid', 'default_case': 'default_case'}
+])
 @mark.asyncio
-async def test_services_execute_http(patch, story, async_mock):
+async def test_services_execute_http(patch, story, async_mock, locations):
     chain = deque([Service(name='service'), Command(name='cmd')])
     patch.object(Containers, 'get_hostname',
                  new=async_mock(return_value='container_host'))
@@ -204,14 +212,18 @@ async def test_services_execute_http(patch, story, async_mock):
             }
         }
     }
+    expected_url = ('http://container_host:2771/invoke/'
+                    f'{locations["path_param"]}?'
+                    f'query_param={locations["query_param"]}')
 
-    expected_url = 'http://container_host:2771/invoke/bar?query_param=bar'
+    def argument_by_name(line, arg):
+        return locations[arg]
 
-    patch.object(story, 'argument_by_name', return_value='bar')
+    patch.object(story, 'argument_by_name', side_effect=argument_by_name)
 
     expected_kwargs = {
         'method': 'POST',
-        'body': json.dumps({'foo': 'bar'}),
+        'body': json.dumps({'foo': locations['foo']}),
         'headers': {'Content-Type': 'application/json; charset=utf-8'}
     }
 
